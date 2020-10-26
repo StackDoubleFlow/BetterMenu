@@ -1,0 +1,25 @@
+{
+	"id": "BetterMenu",
+	"name": "Better Menu",
+	"author": "StackDoubleFlow",
+	"description": [
+		"Rearranges the main menu."
+	],
+	"category": "Other",
+	"gameVersion": "1.12.2",
+	"version": "0.1.0",
+	"links": {
+		"project-home": "https://github.com/StackDoubleFlow/BetterMenu"
+	},
+	"platform": "Quest",
+	"components": [{
+			"Type": "HookMod",
+			"InstallAction": {
+				"InstallLibraryFile": "bettermenu.so"
+			},
+			"UninstallAction": {
+				"RemoveLibraryFile": "bettermenu.so"
+			}
+		}
+	]
+}
