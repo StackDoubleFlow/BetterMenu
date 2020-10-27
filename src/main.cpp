@@ -3,6 +3,7 @@
 #include "custom-types/shared/macros.hpp"
 #include "custom-types/shared/register.hpp"
 #include "System/ValueType.hpp"
+#include "System/Func_1.hpp"
 #include "System/Collections/IEnumerator.hpp"
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
 #include "UnityEngine/SceneManagement/Scene.hpp"
@@ -10,8 +11,11 @@
 #include "UnityEngine/Events/UnityAction_2.hpp"
 #include "UnityEngine/GameObject.hpp"
 #include "UnityEngine/Transform.hpp"
+#include "UnityEngine/WaitUntil.hpp"
+#include "UnityEngine/Vector3.hpp"
 #include "GlobalNamespace/SharedCoroutineStarter.hpp"
 
+using namespace System;
 using namespace System::Collections;
 using namespace UnityEngine::SceneManagement;
 using namespace UnityEngine::Events;
@@ -27,11 +31,20 @@ const Logger &getLogger() {
 
 DECLARE_CLASS_INTERFACES(Il2CppNamespace, OrganizeEnumerator, "System", "Object", sizeof(Il2CppObject),
     il2cpp_utils::GetClassFromName("System.Collections", "IEnumerator"),
+
+    DECLARE_INSTANCE_FIELD(Il2CppObject*, current);
+    DECLARE_INSTANCE_FIELD(bool, hasWaited);
+
     DECLARE_OVERRIDE_METHOD(bool, MoveNext, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "MoveNext"));
     DECLARE_OVERRIDE_METHOD(Il2CppObject*, get_Current, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "get_Current"));
     DECLARE_OVERRIDE_METHOD(void, Reset, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "Reset"));
+
     REGISTER_FUNCTION(OrganizeEnumerator,
         getLogger().debug("Registering OrganizeEnumerator!");
+
+        REGISTER_FIELD(current);
+        REGISTER_FIELD(hasWaited);
+
         REGISTER_METHOD(MoveNext);
         REGISTER_METHOD(get_Current);
         REGISTER_METHOD(Reset);
@@ -41,23 +54,25 @@ DECLARE_CLASS_INTERFACES(Il2CppNamespace, OrganizeEnumerator, "System", "Object"
 DEFINE_CLASS(Il2CppNamespace::OrganizeEnumerator);
 
 Il2CppObject* Il2CppNamespace::OrganizeEnumerator::get_Current() {
-    // TODO
-    return nullptr;
+    return current;
 }
 
-void Il2CppNamespace::OrganizeEnumerator::Reset() {
-    // TODO
-}
+void Il2CppNamespace::OrganizeEnumerator::Reset() {}
 
 bool Il2CppNamespace::OrganizeEnumerator::MoveNext() {
-    getLogger().info("MoveNext was called!");
-
-    return false; // Reached end for coroutine
-
-    // TODO: Wait until menu loads and then find transforms
+    if (!hasWaited) {
+        auto go_find = il2cpp_utils::MakeAction<Func_1<bool>>(
+            CRASH_UNLESS(il2cpp_functions::class_get_type(classof(Func_1<bool>*))),
+            (void*)nullptr, +[] {
+                return GameObject::Find(il2cpp_utils::createcsstr("MainButtons")) != nullptr;
+            }
+        );
+        current = WaitUntil::New_ctor(go_find);
+        hasWaited = true;
+        return true; // Continue coroutine
+    }
 
     GameObject *main_buttons = GameObject::Find(il2cpp_utils::createcsstr("MainButtons"));
-    getLogger().info("MainButtons pointer: %p", main_buttons);
 
     Transform *campaign = main_buttons->get_transform()->Find(il2cpp_utils::createcsstr("CampaignButton"));
     Transform *solo = main_buttons->get_transform()->Find(il2cpp_utils::createcsstr("SoloButton"));
@@ -67,6 +82,21 @@ bool Il2CppNamespace::OrganizeEnumerator::MoveNext() {
     Transform *help = main_buttons->get_transform()->Find(il2cpp_utils::createcsstr("HelpButton"));
     Transform *exit = main_buttons->get_transform()->Find(il2cpp_utils::createcsstr("ExitButton"));
 
+    // Set button positions
+    campaign->set_position(UnityEngine::Vector3(-0.85f, 1.07f, 2.6f));
+    solo->set_position(UnityEngine::Vector3(-0.22f, 1.07f, 2.60f));
+    online->set_position(UnityEngine::Vector3(0.72f, 1.6f, 2.60f));
+    party->set_position(UnityEngine::Vector3(0.62f, 1.05f, 2.60f));
+    options->set_position(UnityEngine::Vector3(-0.66f, 0.75f, 2.60f));
+    help->set_position(UnityEngine::Vector3(0.39f, 0.79f, 2.60f));
+    exit->set_position(UnityEngine::Vector3(0.83f, 0.63f, 2.60f));
+
+    // Rescale Settings and Exit buttons
+    options->set_localScale(UnityEngine::Vector3(1.35f, 1.35f, 1.0f));
+    exit->set_localScale(UnityEngine::Vector3(2.35f, 2.3f, 1.0f));
+
+    current = nullptr;
+    return false; // Reached end of coroutine
 }
 
 IEnumerator *Organize() {
@@ -75,13 +105,10 @@ IEnumerator *Organize() {
 }
 
 void OnLoad(UnityEngine::SceneManagement::Scene scene, LoadSceneMode mode) {
-    getLogger().info("sceneLoaded OnLoad was called!");
-
     if (to_utf8(csstrtostr(scene.get_name())) == "MenuViewControllers") {
         getLogger().info("Main Menu scene loaded, starting coroutine...");
         SharedCoroutineStarter::get_instance()->StartCoroutine(Organize());
     }
-
 }
 
 extern "C" void setup(ModInfo &info) {
