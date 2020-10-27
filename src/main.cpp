@@ -61,12 +61,10 @@ void Il2CppNamespace::OrganizeEnumerator::Reset() {}
 
 bool Il2CppNamespace::OrganizeEnumerator::MoveNext() {
     if (!hasWaited) {
-        auto go_find = il2cpp_utils::MakeAction<Func_1<bool>>(
-            CRASH_UNLESS(il2cpp_functions::class_get_type(classof(Func_1<bool>*))),
-            (void*)nullptr, +[] {
-                return GameObject::Find(il2cpp_utils::createcsstr("MainButtons")) != nullptr;
-            }
-        );
+        // TODO: Use MakeFunc once fixed
+        auto go_find = il2cpp_utils::MakeDelegate<Func_1<bool>*>(classof(Func_1<bool>*), (void*)nullptr, +[] {
+            return GameObject::Find(il2cpp_utils::createcsstr("MainButtons")) != nullptr;
+        });
         current = WaitUntil::New_ctor(go_find);
         hasWaited = true;
         return true; // Continue coroutine
@@ -122,9 +120,8 @@ extern "C" void load() {
 
     il2cpp_functions::Init();
 
-    auto on_load = il2cpp_utils::MakeAction<UnityAction_2<UnityEngine::SceneManagement::Scene, LoadSceneMode>>(
-        CRASH_UNLESS(il2cpp_functions::class_get_type(
-            il2cpp_utils::il2cpp_type_check::il2cpp_no_arg_class<UnityAction_2<UnityEngine::SceneManagement::Scene, LoadSceneMode> *>::get())),
+    auto on_load = il2cpp_utils::MakeDelegate<UnityAction_2<UnityEngine::SceneManagement::Scene, LoadSceneMode>*>(
+        il2cpp_utils::il2cpp_type_check::il2cpp_no_arg_class<UnityAction_2<UnityEngine::SceneManagement::Scene, LoadSceneMode>*>::get(),
         (void*)nullptr, OnLoad);
     SceneManager::add_sceneLoaded(on_load);
 
