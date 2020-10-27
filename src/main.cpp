@@ -1,5 +1,7 @@
 #include "beatsaber-hook/shared/utils/logging.hpp"
 #include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
+#include "custom-types/shared/macros.hpp"
+#include "custom-types/shared/register.hpp"
 #include "System/ValueType.hpp"
 #include "System/Collections/IEnumerator.hpp"
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
@@ -23,16 +25,36 @@ const Logger &getLogger() {
     return logger;
 }
 
-IEnumerator *Organize() {
+DECLARE_CLASS_INTERFACES(Il2CppNamespace, OrganizeEnumerator, "System", "Object", sizeof(Il2CppObject),
+    il2cpp_utils::GetClassFromName("System.Collections", "IEnumerator"),
+    DECLARE_OVERRIDE_METHOD(bool, MoveNext, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "MoveNext"));
+    DECLARE_OVERRIDE_METHOD(Il2CppObject*, get_Current, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "get_Current"));
+    DECLARE_OVERRIDE_METHOD(void, Reset, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "Reset"));
+    REGISTER_FUNCTION(OrganizeEnumerator,
+        getLogger().debug("Registering OrganizeEnumerator!");
+        REGISTER_METHOD(MoveNext);
+        REGISTER_METHOD(get_Current);
+        REGISTER_METHOD(Reset);
+    )
+)
 
+DEFINE_CLASS(Il2CppNamespace::OrganizeEnumerator);
+
+Il2CppObject* Il2CppNamespace::OrganizeEnumerator::get_Current() {
+    // TODO
+    return nullptr;
 }
 
-void OnLoad(UnityEngine::SceneManagement::Scene *scene, LoadSceneMode *mode) {
-    getLogger().info("sceneLoaded OnLoad was called!");
+void Il2CppNamespace::OrganizeEnumerator::Reset() {
+    // TODO
+}
 
-    if (scene->get_name()->Equals(il2cpp_utils::createcsstr("test"))) {
-        SharedCoroutineStarter::get_instance()->StartCoroutine(Organize());
-    }
+bool Il2CppNamespace::OrganizeEnumerator::MoveNext() {
+    getLogger().info("MoveNext was called!");
+
+    return false; // Reached end for coroutine
+
+    // TODO: Wait until menu loads and then find transforms
 
     GameObject *main_buttons = GameObject::Find(il2cpp_utils::createcsstr("MainButtons"));
     getLogger().info("MainButtons pointer: %p", main_buttons);
@@ -44,6 +66,21 @@ void OnLoad(UnityEngine::SceneManagement::Scene *scene, LoadSceneMode *mode) {
     Transform *options = main_buttons->get_transform()->Find(il2cpp_utils::createcsstr("OptionsButton"));
     Transform *help = main_buttons->get_transform()->Find(il2cpp_utils::createcsstr("HelpButton"));
     Transform *exit = main_buttons->get_transform()->Find(il2cpp_utils::createcsstr("ExitButton"));
+
+}
+
+IEnumerator *Organize() {
+    Il2CppNamespace::OrganizeEnumerator *coroutine = CRASH_UNLESS(il2cpp_utils::New<Il2CppNamespace::OrganizeEnumerator *>());
+    return reinterpret_cast<IEnumerator *>(coroutine);
+}
+
+void OnLoad(UnityEngine::SceneManagement::Scene scene, LoadSceneMode mode) {
+    getLogger().info("sceneLoaded OnLoad was called!");
+
+    if (to_utf8(csstrtostr(scene.get_name())) == "MenuViewControllers") {
+        getLogger().info("Main Menu scene loaded, starting coroutine...");
+        SharedCoroutineStarter::get_instance()->StartCoroutine(Organize());
+    }
 
 }
 
@@ -63,6 +100,8 @@ extern "C" void load() {
             il2cpp_utils::il2cpp_type_check::il2cpp_no_arg_class<UnityAction_2<UnityEngine::SceneManagement::Scene, LoadSceneMode> *>::get())),
         (void*)nullptr, OnLoad);
     SceneManager::add_sceneLoaded(on_load);
+
+    CRASH_UNLESS(custom_types::Register::RegisterType<Il2CppNamespace::OrganizeEnumerator>());
 
     getLogger().info("Installed BetterMenu Hooks!");
 }
