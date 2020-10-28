@@ -2,8 +2,11 @@
 	"id": "BetterMenu",
 	"name": "Better Menu",
 	"author": "StackDoubleFlow",
+	"coverImageFilename": "cover.jpg",
+    "icon": "cover.jpg",
 	"description": [
-		"Rearranges the main menu."
+		"Rearranges the main menu.",
+		"This is a port of the original mod for pc created by AceofShovels"
 	],
 	"category": "Other",
 	"gameVersion": "1.12.2",
@@ -19,6 +22,24 @@
 			},
 			"UninstallAction": {
 				"RemoveLibraryFile": "bettermenu.so"
+			}
+		},
+		{
+			"type": "HookModLibrary",
+			"installAction": {
+			  "installLibraryFile": "libbeatsaber-hook_0_8_2.so"
+			}
+		},
+		{
+			"type": "HookModLibrary",
+			"installAction": {
+			  "installLibraryFile": "libcodegen_0_3_5.so"
+			}
+		},
+		{
+			"type": "HookModLibrary",
+			"installAction": {
+			  "installLibraryFile": "libcustom-types.so"
 			}
 		}
 	]
