@@ -10,7 +10,7 @@
 	],
 	"category": "Other",
 	"gameVersion": "1.12.2",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"links": {
 		"project-home": "https://github.com/StackDoubleFlow/BetterMenu"
 	},
@@ -18,16 +18,22 @@
 	"components": [{
 			"Type": "HookMod",
 			"InstallAction": {
-				"InstallLibraryFile": "bettermenu.so"
+				"InstallLibraryFile": "libbettermenu.so"
 			},
 			"UninstallAction": {
-				"RemoveLibraryFile": "bettermenu.so"
+				"RemoveLibraryFile": "libbettermenu.so"
 			}
 		},
 		{
 			"type": "HookModLibrary",
 			"installAction": {
 			  "installLibraryFile": "libbeatsaber-hook_0_8_2.so"
+			}
+		},
+		{
+			"type": "HookModLibrary",
+			"installAction": {
+			  "installLibraryFile": "libbeatsaber-hook_0_8_0.so"
 			}
 		},
 		{
