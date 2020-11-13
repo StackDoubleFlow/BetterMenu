@@ -9,8 +9,8 @@
 		"This is a port of the original mod for pc created by AceofShovels"
 	],
 	"category": "Other",
-	"gameVersion": "1.12.2",
-	"version": "0.1.1",
+	"gameVersion": "1.13.0",
+	"version": "0.2.0",
 	"links": {
 		"project-home": "https://github.com/StackDoubleFlow/BetterMenu"
 	},
@@ -27,19 +27,13 @@
 		{
 			"type": "HookModLibrary",
 			"installAction": {
-			  "installLibraryFile": "libbeatsaber-hook_0_8_2.so"
+			  "installLibraryFile": "libbeatsaber-hook_0_8_4.so"
 			}
 		},
 		{
 			"type": "HookModLibrary",
 			"installAction": {
-			  "installLibraryFile": "libbeatsaber-hook_0_8_0.so"
-			}
-		},
-		{
-			"type": "HookModLibrary",
-			"installAction": {
-			  "installLibraryFile": "libcodegen_0_3_5.so"
+			  "installLibraryFile": "libcodegen_0_3_6.so"
 			}
 		},
 		{
