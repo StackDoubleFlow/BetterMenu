@@ -15,6 +15,7 @@
 #include "UnityEngine/WaitUntil.hpp"
 #include "UnityEngine/Vector3.hpp"
 #include "GlobalNamespace/SharedCoroutineStarter.hpp"
+#include "GlobalNamespace/PromoViewController.hpp"
 #include "HMUI/ButtonSpriteSwap.hpp"
 #include "images.h"
 
@@ -166,6 +167,12 @@ void OnLoad(UnityEngine::SceneManagement::Scene scene, LoadSceneMode mode) {
     }
 }
 
+MAKE_HOOK_OFFSETLESS(PromoViewController_DidActivate, void, PromoViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
+    // Disable the GameObject and don't call DidActivate to remove the BTS/other pack promotion
+    getLogger().info("Removing promotion");
+    self->get_gameObject()->SetActive(false);
+}
+
 extern "C" void setup(ModInfo &info) {
     info.id = "BetterMenu";
     info.version = "0.1.0";
@@ -181,6 +188,8 @@ extern "C" void load() {
         il2cpp_utils::il2cpp_type_check::il2cpp_no_arg_class<UnityAction_2<UnityEngine::SceneManagement::Scene, LoadSceneMode>*>::get(),
         (void*)nullptr, OnLoad);
     SceneManager::add_sceneLoaded(on_load);
+
+    INSTALL_HOOK_OFFSETLESS(PromoViewController_DidActivate, il2cpp_utils::FindMethodUnsafe("", "PromoViewController", "DidActivate", 3));
 
     CRASH_UNLESS(custom_types::Register::RegisterType<Il2CppNamespace::OrganizeEnumerator>());
 
