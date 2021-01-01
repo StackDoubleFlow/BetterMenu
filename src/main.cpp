@@ -175,7 +175,7 @@ MAKE_HOOK_OFFSETLESS(PromoViewController_DidActivate, void, PromoViewController*
 
 extern "C" void setup(ModInfo &info) {
     info.id = "BetterMenu";
-    info.version = "0.1.0";
+    info.version = "0.2.1";
     modInfo = info;
 }
 
